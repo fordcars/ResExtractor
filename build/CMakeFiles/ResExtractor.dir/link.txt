@@ -1,0 +1,2 @@
+/usr/bin/ar qc /home/fc/Desktop/Files/Development/NanoSDL/ResExtractor/lib/ResExtractor/libResExtractor.a  CMakeFiles/ResExtractor.dir/RESX/File.cpp.o CMakeFiles/ResExtractor.dir/RESX/ResourceFork.cpp.o
+/usr/bin/ranlib /home/fc/Desktop/Files/Development/NanoSDL/ResExtractor/lib/ResExtractor/libResExtractor.a

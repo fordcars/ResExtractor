@@ -1,0 +1,4 @@
+/home/fc/Desktop/Files/Development/NanoSDL/ResExtractor/build/CMakeFiles/rebuild_cache.dir
+/home/fc/Desktop/Files/Development/NanoSDL/ResExtractor/build/CMakeFiles/ResExtractor.dir
+/home/fc/Desktop/Files/Development/NanoSDL/ResExtractor/build/CMakeFiles/edit_cache.dir
+/home/fc/Desktop/Files/Development/NanoSDL/ResExtractor/build/CMakeFiles/ResExtractorCmdLine.dir
