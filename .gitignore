@@ -33,3 +33,6 @@
 
 # Build directory
 build/
+
+# Bin directory
+bin/
