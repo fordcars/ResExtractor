@@ -23,12 +23,14 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQURED ON)
 
 # CMAKE_SOURCE_DIR: path to directory of the top-level 'CMakeLists.txt'.
+# CMAKE_CURRENT_SOURCE_DIR: path to source directory currently being processed.
 # CMAKE_BINARY_DIR: path to where we ran 'cmake' from.
+# CMAKE_CURRENT_BINARY_DIR: path to where we are 'virtually' running 'cmake' from.
 
-set(RES_EXTRACTOR_SOURCE_DIR ${CMAKE_SOURCE_DIR})
+set(RES_EXTRACTOR_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(RES_EXTRACTOR_INCLUDE_DIR ${RES_EXTRACTOR_SOURCE_DIR}/include)
-set(RES_EXTRACTOR_OUTPUT_LIB_DIR ${CMAKE_BINARY_DIR}/../lib/ResExtractor)
-set(RES_EXTRACTOR_OUTPUT_EXE_DIR ${CMAKE_BINARY_DIR}/../bin)
+set(RES_EXTRACTOR_OUTPUT_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/../lib/ResExtractor)
+set(RES_EXTRACTOR_OUTPUT_EXE_DIR ${CMAKE_CURRENT_BINARY_DIR}/../bin)
 
 set(RES_EXTRACTOR_SOURCES
 	${RES_EXTRACTOR_SOURCE_DIR}/RESX/File.cpp
@@ -57,7 +59,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${RES_EXTRACTOR_OUTPUT_EXE_DIR})
 # Create library
 message(STATUS "Creating library target...")
 add_library(
-	ResExtractor STATIC # Static library
+	ResExtractor STATIC
 	${RES_EXTRACTOR_SOURCES}
 	${RES_EXTRACTOR_HEADERS}
 )
