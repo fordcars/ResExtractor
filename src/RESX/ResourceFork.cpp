@@ -194,7 +194,7 @@ std::string ResourceFork::getResourceName(Defs::addr resourceNameAddr)
 }
 
 // Get all IDs for resource type.
-std::vector<unsigned int> ResourceFork::getResourceIDs(const std::string& type)
+std::vector<unsigned int> ResourceFork::getResourcesIDs(const std::string& type)
 {
     std::vector<unsigned int> IDs;
     ReferenceListPointerPair referenceListPointerPair = findReferenceListPointer(type);
@@ -217,7 +217,7 @@ std::vector<unsigned int> ResourceFork::getResourceIDs(const std::string& type)
 }
 
 // Get all names for resource type.
-std::vector<std::string> ResourceFork::getResourceNames(const std::string& type)
+std::vector<std::string> ResourceFork::getResourcesNames(const std::string& type)
 {
     std::vector<std::string> names;
     ReferenceListPointerPair referenceListPointerPair = findReferenceListPointer(type);
