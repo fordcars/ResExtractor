@@ -176,6 +176,8 @@ public:
                                                  const std::string& dataTryingToReadName);
 
     std::unique_ptr<char, freeDelete> getResourceData(const std::string& type, int ID, std::size_t* size);
+    std::unique_ptr<char, freeDelete> getResourceData(const std::string& type,
+        const std::string& name, std::size_t* size);
 
     // Returns unique_ptr to requested type.
     template<typename requestedType>

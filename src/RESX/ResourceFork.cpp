@@ -339,10 +339,35 @@ Defs::addr ResourceFork::findResourceAddress(const std::string& type, const std:
     return resourceAddress;
 }
 
+// Get resource data from ID.
 std::unique_ptr<char, freeDelete> ResourceFork::getResourceData(const std::string& type, int ID, std::size_t* size)
 {
     // Find the resource!
     Defs::addr resourceAddress = findResourceAddress(type, ID);
+    mHFSFile->seekg(resourceAddress, std::ios::beg);
+
+    std::size_t resourceSize = readSinglePrimitive<std::size_t>(mHFSFile, 4UL);
+    /* File cursor now at actual resource data */
+
+    // void* to unique_ptr<char>
+    std::unique_ptr<char, freeDelete> rawData(static_cast<char*>(
+        std::malloc(resourceSize)
+    ));
+
+    // Read the data and store on heap.
+    mHFSFile->read(rawData.get(), resourceSize);
+    checkFileReadErrors(mHFSFile, resourceSize, "resource");
+
+    *size = resourceSize;
+    return rawData;
+}
+
+// Get resource data from name.
+std::unique_ptr<char, freeDelete> ResourceFork::getResourceData(const std::string& type,
+    const std::string& name, std::size_t* size)
+{
+    // Find the resource!
+    Defs::addr resourceAddress = findResourceAddress(type, name);
     mHFSFile->seekg(resourceAddress, std::ios::beg);
 
     std::size_t resourceSize = readSinglePrimitive<std::size_t>(mHFSFile, 4UL);
