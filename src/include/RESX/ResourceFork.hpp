@@ -39,6 +39,12 @@
 namespace RESX
 {
 
+// Class definition, not instantiation!
+struct freeDelete
+{
+    void operator()(void* x) { free(x); }
+};
+
 class ResourceFork
 {
 public:
@@ -151,12 +157,6 @@ private:
         return std::vector<B>(rawData.begin(), rawData.end());
     }
 
-    // Class definition, not instantiation!
-    struct freeDelete
-    {
-        void operator()(void* x) { free(x); }
-    };
-
     void parseHeader();
     void parseResourceMapFields();
     ReferenceListPointerPair findReferenceListPointer(const std::string& type);
@@ -172,35 +172,15 @@ public:
     static void checkFileReadErrors(ifstreamPointer file, std::size_t bytesExpected,
                                                  const std::string& dataTryingToReadName);
 
+    std::unique_ptr<char, freeDelete> getResourceData(const std::string& type, int ID);
+
     // Returns unique_ptr to requested type.
     template<typename requestedType>
     std::unique_ptr<requestedType> getResource(const std::string& type, int ID)
     {
-        // Find the resource!
-        Defs::addr resourceAddress = findResourceAddress(type, ID);
-        mHFSFile->seekg(resourceAddress, std::ios::beg);
+        std::unique_ptr<char, freeDelete> rawData = getResourceData(type, ID);
 
-        std::size_t resourceSize = readSinglePrimitive<std::size_t>(mHFSFile, 4UL);
-        /* File cursor now at actual resource data */
-
-        if(resourceSize != sizeof(requestedType))
-        {
-            std::cerr << "Size of found resource (type: \"" << type << "\", ID: " <<
-                ID << ") is " << resourceSize << " bytes, when " << sizeof(requestedType)
-                << " bytes was expected!" << std::endl;
-        } else
-        {
-            std::cout << "Size of found resource: " << resourceSize << " bytes." << std::endl;
-        }
-
-        // void* to unique_ptr<char>
-        std::unique_ptr<char, freeDelete> rawData(static_cast<char*>(
-            std::malloc(resourceSize)
-        ));
-
-        // Read the data and store on heap.
-        mHFSFile->read(rawData.get(), resourceSize);
-        checkFileReadErrors(mHFSFile, resourceSize, "resource");
+        std::cout << "Expected size: " << sizeof(requestedType) << " bytes." << std::endl;
 
         // Cast from char* to requestedType*, then create and return smart pointer:
         return saferReinterpretCastToHeap<requestedType>(rawData.get(), sizeof(requestedType));

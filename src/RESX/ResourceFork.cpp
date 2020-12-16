@@ -288,4 +288,28 @@ Defs::addr ResourceFork::findResourceAddress(const std::string& type, const std:
     return resourceAddress;
 }
 
+std::unique_ptr<char, freeDelete> ResourceFork::getResourceData(const std::string& type, int ID)
+{
+    // Find the resource!
+    Defs::addr resourceAddress = findResourceAddress(type, ID);
+    mHFSFile->seekg(resourceAddress, std::ios::beg);
+
+    std::size_t resourceSize = readSinglePrimitive<std::size_t>(mHFSFile, 4UL);
+    /* File cursor now at actual resource data */
+
+    std::cout << "Size of found resource: " << resourceSize << " bytes." << std::endl;
+
+    // void* to unique_ptr<char>
+    std::unique_ptr<char, freeDelete> rawData(static_cast<char*>(
+        std::malloc(resourceSize)
+    ));
+
+    // Read the data and store on heap.
+    mHFSFile->read(rawData.get(), resourceSize);
+    checkFileReadErrors(mHFSFile, resourceSize, "resource");
+
+    return rawData;
+}
+
+
 } // namespace RESX
