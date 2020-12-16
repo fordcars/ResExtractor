@@ -29,7 +29,6 @@
 #include <fstream>
 
 std::string gVersion = "v1.0";
-const unsigned READ_LENGTH = 1e6; // Sorry! 1 MB, must be known at compile time.
 
 using Big = long long int;
 
@@ -72,11 +71,9 @@ void printHelp()
         "**        Version: " << gVersion << "      **" << std::endl <<
         "********************************" << std::endl <<
         std::endl <<
-        "Reads a resource from a resource fork file." << std::endl <<
-        "Note: errors such as 'End-of-file reached...' and 'Expected to read X bytes...' " <<
-        "are normal and can be safely discarded." << std::endl <<
+        "Extracts a resource from a resource fork file (.rsrc)." << std::endl <<
         std::endl <<
-        "Usage: ResExtractorCmdLine [-input INPUT_FILE -length BYTES -resourceID ID -resourceType TYPE " <<
+        "Usage: ResExtractorCmdLine [-input INPUT_FILE -resourceID ID -resourceType TYPE " <<
         "[-blocksize BYTES] [-output OUTPUT_FILE] [-startblock BLOCK]]" << std::endl <<
         std::endl <<
         " --help, --h                 display help" << std::endl <<
