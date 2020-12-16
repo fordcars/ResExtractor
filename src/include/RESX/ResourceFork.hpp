@@ -72,38 +72,6 @@ private:
 
     static inline void checkFloatingTypes();
 
-    // Casts typeToCastFrom* to typeToCastTo value.
-    // Copies and returns data on stack.
-    // If sizeOfThingToCast is != sizeof(typeToCastTo), will throw warning
-    // for safety/portability.
-    template<typename typeToCastTo, typename typeToCastFrom>
-    static typeToCastTo saferReinterpretCastToStack(const typeToCastFrom* thingToCast,
-                                                        std::size_t sizeOfThingToCast)
-    {
-        // The only use of sizeOfThingToCast lol
-        if(sizeOfThingToCast != sizeof(typeToCastTo))
-            std::cerr << "Value to reinterpret cast is not the same size " <<
-                "as new type! Returned value might contain garbage. " << std::endl;
-
-
-        // Safest (to the best of my knowledge) way of type punning in C++:
-        // From Shafik Yaghmour
-        // (https://gist.github.com/shafik/848ae25ee209f698763cffee272a58f8)
-
-        // Memory is allocated for newThing here:
-        // (who cares if it's not initialized, we'll overwrite it anyways with memcpy):
-        typeToCastTo newThing;
-        // Will copy sizeof(typeToCastTo) no-matter what.
-        // Like that, if typeToCastTo is uninitialized (i.e. an int),
-        // nobody cares.
-        // Note:  with a correctly-defined memcpy, gcc strict-aliasing isn't allowed
-        // to break this code.
-        // Michael Burr (https://stackoverflow.com/questions/2958633/gcc-strict-aliasing-and-horror-stories).
-        std::memcpy(&newThing, thingToCast, sizeof(typeToCastTo));
-
-        return newThing;
-    }
-
     // Casts typeToCastFrom* to std::unique_ptr<typeToCastTo>.
     // Copies and returns data on heap.
     // https://www.fluentcpp.com/2017/08/15/function-templates-partial-specialization-cpp/
@@ -163,7 +131,7 @@ private:
             // itself, but this is simpler in our case.
             std::reverse(std::begin(rawData), std::end(rawData));
 
-        return saferReinterpretCastToStack<B>(rawData.data(), rawData.size());
+        return *reinterpret_cast<B*>(rawData.data());
     }
 
     // Read an array having elements of size char (and ONLY of size char,
@@ -208,11 +176,6 @@ public:
     template<typename requestedType>
     std::unique_ptr<requestedType> getResource(const std::string& type, int ID)
     {
-        // Read data manually, since it is a pretty special case:
-        // We must read data on heap and without inverting any byte order
-        // (since only the client can revert endianness for struts).
-        std::unique_ptr<char, freeDelete> rawData( static_cast<char*>(std::malloc( sizeof(requestedType) )) );
-
         // Find the resource!
         Defs::addr resourceAddress = findResourceAddress(type, ID);
         mHFSFile->seekg(resourceAddress, std::ios::beg);
@@ -220,18 +183,24 @@ public:
         std::size_t resourceSize = readSinglePrimitive<std::size_t>(mHFSFile, 4UL);
         /* File cursor now at actual resource data */
 
-        // Seems like the size field of resource data in resource fork is not
-        // the actual size of the data. WHYY? Weird padding? Looks like
-        // a bunch of trash data is added after the struct data. Might be Pangea's
-        // own tool (BioOreo Pro) adding that junk?.
         if(resourceSize != sizeof(requestedType))
+        {
             std::cerr << "Size of found resource (type: \"" << type << "\", ID: " <<
                 ID << ") is " << resourceSize << " bytes, when " << sizeof(requestedType)
                 << " bytes was expected!" << std::endl;
+        } else
+        {
+            std::cout << "Size of found resource: " << resourceSize << " bytes." << std::endl;
+        }
 
-        // Read the data and store on heap
-        mHFSFile->read(rawData.get(), sizeof(requestedType));
-        checkFileReadErrors(mHFSFile, sizeof(requestedType), "resource");
+        // void* to unique_ptr<char>
+        std::unique_ptr<char, freeDelete> rawData(static_cast<char*>(
+            std::malloc(resourceSize)
+        ));
+
+        // Read the data and store on heap.
+        mHFSFile->read(rawData.get(), resourceSize);
+        checkFileReadErrors(mHFSFile, resourceSize, "resource");
 
         // Cast from char* to requestedType*, then create and return smart pointer:
         return saferReinterpretCastToHeap<requestedType>(rawData.get(), sizeof(requestedType));
