@@ -84,7 +84,7 @@ void printHelp()
         std::endl <<
         " -blocksize                  set block size in bytes, 4 KiB by default" << std::endl <<
         " -input                      set input file containing resource fork (.hfs or .rsrc)" << std::endl <<
-        " -length                     set length of the resource to extract" << std::endl <<
+        " -length                     set length (in bytes) of the resource to extract" << std::endl <<
         " -output                     set output file, will print resource to cmdline if unspecified" << std::endl <<
         " -resourceID                 set resource ID to extract" << std::endl <<
         " -resourceType               set resource type to extact" << std::endl <<
