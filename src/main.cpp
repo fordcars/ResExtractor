@@ -84,7 +84,6 @@ void printHelp()
         std::endl <<
         " -blocksize                  set block size in bytes, 4 KiB by default" << std::endl <<
         " -input                      set input file containing resource fork (.hfs or .rsrc)" << std::endl <<
-        " -length                     set length (in bytes) of the resource to extract" << std::endl <<
         " -output                     set output file, will print resource to cmdline if unspecified" << std::endl <<
         " -resourceID                 set resource ID to extract" << std::endl <<
         " -resourceType               set resource type to extact" << std::endl <<
@@ -99,7 +98,6 @@ int main(int argc, char **argv)
 
     // Modifiable with arguments
     Big blockSize = 4096LL; // Default: 4 kibibytes
-    Big lengthToExtract = -1LL;
     Big startBlock = 0LL; // 0 by default
 
     std::string inputFile;
@@ -115,7 +113,6 @@ int main(int argc, char **argv)
 
                     argDefinitionTuple("-blocksize", &blockSize, "Big"),
                     argDefinitionTuple("-input", &inputFile, "std::string"),
-                    argDefinitionTuple("-length", &lengthToExtract, "Big"),
                     argDefinitionTuple("-output", &outputFile, "std::string"),
                     argDefinitionTuple("-resourceID", &resourceID, "int"),
                     argDefinitionTuple("-resourceType", &resourceType, "std::string"),
@@ -180,12 +177,6 @@ int main(int argc, char **argv)
     if(inputFile.empty())
     {
         std::cerr << "Error: input file not specified, you must specify it with -input" << std::endl;
-        return 1;
-    }
-
-    if(lengthToExtract == -1LL)
-    {
-        std::cerr << "Error: length not specified, you must specify it with -length" << std::endl;
         return 1;
     }
 

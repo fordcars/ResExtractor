@@ -178,18 +178,18 @@ public:
     template<typename requestedType>
     std::unique_ptr<requestedType> getResource(const std::string& type, int ID)
     {
-        std::size_t size;
-        std::unique_ptr<char, freeDelete> rawData = getResourceData(type, ID, &size);
+        std::size_t dataSize;
+        std::unique_ptr<char, freeDelete> rawData = getResourceData(type, ID, &dataSize);
 
-        if(resourceSize != sizeof(requestedType))
+        if(dataSize != sizeof(requestedType))
         {
             std::cerr << "Size of found resource (type: \"" << type << "\", ID: " <<
-                ID << ") is " << resourceSize << " bytes, when " << sizeof(requestedType)
+                ID << ") is " << dataSize << " bytes, when " << sizeof(requestedType)
                 << " bytes was expected!" << std::endl;
         }
 
         // Cast from char* to requestedType*, then create and return smart pointer:
-        return saferReinterpretCastToHeap<requestedType>(rawData.get(), sizeof(requestedType));
+        return saferReinterpretCastToHeap<requestedType>(rawData.get(), dataSize);
     }
 };
 
