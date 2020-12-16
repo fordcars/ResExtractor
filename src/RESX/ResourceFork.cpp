@@ -208,9 +208,40 @@ std::vector<unsigned int> ResourceFork::getResourceIDs(const std::string& type)
         // Read resource ID
         int readID = readSinglePrimitive<unsigned int>(mHFSFile, 2UL);
         IDs.push_back(readID);
+
+        // Go to the next resource.
+        mHFSFile->seekg(2 + 1 + 3 + 4, std::ios::cur);
     }
 
     return IDs;
+}
+
+// Get all names for resource type.
+std::vector<std::string> ResourceFork::getResourceNames(const std::string& type)
+{
+    std::vector<std::string> names;
+    ReferenceListPointerPair referenceListPointerPair = findReferenceListPointer(type);
+
+    // Move cursor to reference list for this type
+    mHFSFile->seekg(referenceListPointerPair.second, std::ios::beg);
+
+    // Iterate through all resources of this type.
+    for(int i = 0; i <= referenceListPointerPair.first; i++)
+    {
+        // Skip resource ID
+        mHFSFile->seekg(2, std::ios::cur);
+        Defs::addr resourceNameAddr = mResourceNameListAddr +
+                        readSinglePrimitive<Defs::addr>(mHFSFile, 2UL);
+
+        // Get resource name
+        std::string readName = getResourceName(resourceNameAddr);
+        names.push_back(readName);
+
+        // Go to the next resource.
+        mHFSFile->seekg(1 + 3 + 4, std::ios::cur);
+    }
+
+    return names;
 }
 
 // Find resource address by ID in the reference list.
