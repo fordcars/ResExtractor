@@ -162,6 +162,7 @@ private:
     ReferenceListPointerPair findReferenceListPointer(const std::string& type);
 
     std::string getResourceName(Defs::addr resourceNameAddr);
+    std::vector<unsigned int> getResourceIDs(const std::string& type);
     Defs::addr findResourceAddress(const std::string& type, int ID);
     Defs::addr findResourceAddress(const std::string& type, const std::string& name);
 
