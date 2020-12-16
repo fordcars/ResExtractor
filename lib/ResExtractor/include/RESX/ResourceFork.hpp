@@ -257,10 +257,10 @@ public:
         // the actual size of the data. WHYY? Weird padding? Looks like
         // a bunch of trash data is added after the struct data. Might be Pangea's
         // own tool (BioOreo Pro) adding that junk?.
-        /*if(resourceSize != sizeof(requestedType))
+        if(resourceSize != sizeof(requestedType))
             std::cerr << "Size of found resource (type: \"" << type << "\", ID: " <<
                 ID << ") is " << resourceSize << " bytes, when " << sizeof(requestedType)
-                << " bytes was expected!" << std::endl;*/
+                << " bytes was expected!" << std::endl;
 
         // Read the data and store on heap
         mHFSFile->read(rawData.get(), sizeof(requestedType));

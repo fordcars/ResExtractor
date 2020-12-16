@@ -102,36 +102,10 @@ private:
         std::memcpy(&newThing, thingToCast, sizeof(typeToCastTo));
 
         return newThing;
-
-        // Not a very safe way of type punning here, don't do this:
-        /*union
-        {
-            typeToCastFrom thingToCast;
-            typeToCastTo newThing;
-        } reinterpretUnion;
-
-        reinterpretUnion.thingToCast = thingToCast; // Active member now boy
-
-        // Wait what??? Accessing a non-active member?
-        // What are you doing Carl??
-        // Chill, accessing a non-active member actually interprets
-        // the active member's value as if it was of type 'typeToCastFrom'
-        // (on all major compilers). It is now the preferred way to
-        // reinterpret_cast to avoid problems with strict alias rules
-        // with some compilers (looking at you, gcc).
-        // Note: DOES THIS WORK IF typeToCastFrom IS AN ARRAY???
-        // Prob not. In our case it's always an array so whoops.
-        // Is a dereferenced thingToCast[0] in the union safe? Maybe not?
-        // Prob not?
-        return reinterpretUnion.newThing;*/
     }
 
     // Casts typeToCastFrom* to std::unique_ptr<typeToCastTo>.
     // Copies and returns data on heap.
-    // Why all this copying instead of using reinterpret_cast? Because
-    // I decided to focus more on portability than faster run-time.
-    // If sizeOfThingToCast is != sizeof(typeToCastTo), will throw warning
-    // for safety/portability.
     // https://www.fluentcpp.com/2017/08/15/function-templates-partial-specialization-cpp/
     template<typename typeToCastTo, typename typeToCastFrom>
     // const typeToCastFrom* because C++ references can't be incremented.
@@ -195,11 +169,6 @@ private:
     // Read an array having elements of size char (and ONLY of size char,
     // don't try to read an array from file with elements larger than char)
     // from binary file.
-    // Never reverses byte order, essentially only used to read C strings.
-    // Use seekg to move the cursor to the chunk of bytes
-    // you want to read.
-    // (This function moves the file cursor to the end of
-    // the read bytes.)
     template<typename B>
     static std::vector<B> readByteArray(ifstreamPointer file, std::size_t bytesToRead)
     {
@@ -241,9 +210,7 @@ public:
     {
         // Read data manually, since it is a pretty special case:
         // We must read data on heap and without inverting any byte order
-        // (since only the client can revert endianness, since he must
-        // revert every member of his struct individually).
-        // Create memory on heap the size of our returned type size
+        // (since only the client can revert endianness for struts).
         std::unique_ptr<char, freeDelete> rawData( static_cast<char*>(std::malloc( sizeof(requestedType) )) );
 
         // Find the resource!
@@ -257,20 +224,15 @@ public:
         // the actual size of the data. WHYY? Weird padding? Looks like
         // a bunch of trash data is added after the struct data. Might be Pangea's
         // own tool (BioOreo Pro) adding that junk?.
-        /*if(resourceSize != sizeof(requestedType))
+        if(resourceSize != sizeof(requestedType))
             std::cerr << "Size of found resource (type: \"" << type << "\", ID: " <<
                 ID << ") is " << resourceSize << " bytes, when " << sizeof(requestedType)
-                << " bytes was expected!" << std::endl;*/
+                << " bytes was expected!" << std::endl;
 
         // Read the data and store on heap
         mHFSFile->read(rawData.get(), sizeof(requestedType));
         checkFileReadErrors(mHFSFile, sizeof(requestedType), "resource");
 
-        // Note1: Struct members are always in the same order (by address),
-        // whether it is big-endian or little-endian. Endianness only
-        // affects individual values.
-        // Note2: padding in a struct is always at the address AFTER
-        // each member, whether it is big-endian or little-endian.
         // Cast from char* to requestedType*, then create and return smart pointer:
         return saferReinterpretCastToHeap<requestedType>(rawData.get(), sizeof(requestedType));
     }

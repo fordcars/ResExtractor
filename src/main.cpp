@@ -210,6 +210,7 @@ int main(int argc, char **argv)
     RESX::File myFile(inputFile, blockSize);
     std::unique_ptr<struct ReadData> resourceData = myFile.loadResourceFork(startBlock).getResource<struct ReadData>(resourceType, resourceID);
 
+    // Print resource if outputFile is not specified.
     if(outputFile.empty())
     {
         // From https://stackoverflow.com/questions/7639656/getting-a-buffer-into-a-stringstream-in-hex-representation/7639754#7639754
