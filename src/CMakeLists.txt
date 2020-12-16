@@ -76,7 +76,6 @@ add_executable(
 	ResExtractorCmdLine
     
     main.cpp
-    main.hpp
 )
 
 # Add executable includes
