@@ -21,11 +21,6 @@
 
 #include <iostream>
 
-// This adds the RESX:: namespace to all ("out-of-function") definitions.
-// Having this englobe the whole file does the exact same thing as typing
-// 'RESX::' in-front of all function definitions, since as soon as you are
-// in a function's body, you are also in the namespace used in the function's
-// name.
 namespace RESX
 {
 
