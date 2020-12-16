@@ -201,21 +201,17 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    // The only way to avoid problems casting to static array later on.
-    struct ReadData
-    {
-        char data[READ_LENGTH];
-    };
-
     RESX::File myFile(inputFile, blockSize);
-    std::unique_ptr<struct ReadData> resourceData = myFile.loadResourceFork(startBlock).getResource<struct ReadData>(resourceType, resourceID);
+    std::size_t resourceSize;
+    std::unique_ptr<char, RESX::freeDelete> resourceData =
+        myFile.loadResourceFork(startBlock).getResourceData(resourceType, resourceID, &resourceSize);
 
     // Print resource if outputFile is not specified.
     if(outputFile.empty())
     {
         // From https://stackoverflow.com/questions/7639656/getting-a-buffer-into-a-stringstream-in-hex-representation/7639754#7639754
         std::cout << std::hex << std::setfill('0');
-        for(std::size_t i = 0; i < lengthToExtract; ++i)
+        for(std::size_t i = 0; i < resourceSize; ++i)
         {
             // Reinterpret casting to unsigned char to avoid << printing a negative hex value, while
             // making sure we keep the exact same value bitwise.
@@ -225,7 +221,7 @@ int main(int argc, char **argv)
             // to any CPU instructions at all, and only exists for the compiler. Thus, it cannot return
             // by value, but can only "return" a reference or pointer (which tells the compiler to use the
             // variable as is, without any implicit conversions or compiler errors).)
-            std::cout << std::setw(2) << static_cast<unsigned>(reinterpret_cast<unsigned char&>(resourceData->data[i]));
+            std::cout << std::setw(2) << static_cast<unsigned>(reinterpret_cast<unsigned char&>(resourceData.get()[i]));
 
             if((i+1)%8 == 0)
                 std::cout << "  ";
@@ -247,7 +243,7 @@ int main(int argc, char **argv)
             return 1;
         }
 
-        file.write(resourceData->data, lengthToExtract);
+        file.write(resourceData.get(), resourceSize);
         if(file.fail())
         {
             std::cerr << "Error: writing to  '" << outputFile << "' failed!" << std::endl;

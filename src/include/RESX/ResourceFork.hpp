@@ -172,13 +172,14 @@ public:
     static void checkFileReadErrors(ifstreamPointer file, std::size_t bytesExpected,
                                                  const std::string& dataTryingToReadName);
 
-    std::unique_ptr<char, freeDelete> getResourceData(const std::string& type, int ID);
+    std::unique_ptr<char, freeDelete> getResourceData(const std::string& type, int ID, std::size_t* size);
 
     // Returns unique_ptr to requested type.
     template<typename requestedType>
     std::unique_ptr<requestedType> getResource(const std::string& type, int ID)
     {
-        std::unique_ptr<char, freeDelete> rawData = getResourceData(type, ID);
+        std::size_t size;
+        std::unique_ptr<char, freeDelete> rawData = getResourceData(type, ID, &size);
 
         std::cout << "Expected size: " << sizeof(requestedType) << " bytes." << std::endl;
 

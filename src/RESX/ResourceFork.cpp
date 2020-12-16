@@ -288,7 +288,7 @@ Defs::addr ResourceFork::findResourceAddress(const std::string& type, const std:
     return resourceAddress;
 }
 
-std::unique_ptr<char, freeDelete> ResourceFork::getResourceData(const std::string& type, int ID)
+std::unique_ptr<char, freeDelete> ResourceFork::getResourceData(const std::string& type, int ID, std::size_t* size)
 {
     // Find the resource!
     Defs::addr resourceAddress = findResourceAddress(type, ID);
@@ -308,6 +308,7 @@ std::unique_ptr<char, freeDelete> ResourceFork::getResourceData(const std::strin
     mHFSFile->read(rawData.get(), resourceSize);
     checkFileReadErrors(mHFSFile, resourceSize, "resource");
 
+    *size = resourceSize;
     return rawData;
 }
 
