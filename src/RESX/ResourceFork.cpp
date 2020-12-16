@@ -297,8 +297,6 @@ std::unique_ptr<char, freeDelete> ResourceFork::getResourceData(const std::strin
     std::size_t resourceSize = readSinglePrimitive<std::size_t>(mHFSFile, 4UL);
     /* File cursor now at actual resource data */
 
-    std::cout << "Size of found resource: " << resourceSize << " bytes." << std::endl;
-
     // void* to unique_ptr<char>
     std::unique_ptr<char, freeDelete> rawData(static_cast<char*>(
         std::malloc(resourceSize)

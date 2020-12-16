@@ -181,7 +181,12 @@ public:
         std::size_t size;
         std::unique_ptr<char, freeDelete> rawData = getResourceData(type, ID, &size);
 
-        std::cout << "Expected size: " << sizeof(requestedType) << " bytes." << std::endl;
+        if(resourceSize != sizeof(requestedType))
+        {
+            std::cerr << "Size of found resource (type: \"" << type << "\", ID: " <<
+                ID << ") is " << resourceSize << " bytes, when " << sizeof(requestedType)
+                << " bytes was expected!" << std::endl;
+        }
 
         // Cast from char* to requestedType*, then create and return smart pointer:
         return saferReinterpretCastToHeap<requestedType>(rawData.get(), sizeof(requestedType));
