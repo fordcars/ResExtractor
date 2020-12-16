@@ -163,8 +163,6 @@ private:
 
     std::string getResourceName(Defs::addr resourceNameAddr);
 
-    std::vector<unsigned int> getResourcesIDs(const std::string& type);
-    std::vector<std::string> getResourcesNames(const std::string& type);
     Defs::addr findResourceAddress(const std::string& type, int ID);
     Defs::addr findResourceAddress(const std::string& type, const std::string& name);
 
@@ -174,6 +172,9 @@ public:
 
     static void checkFileReadErrors(ifstreamPointer file, std::size_t bytesExpected,
                                                  const std::string& dataTryingToReadName);
+
+    std::vector<unsigned int> getResourcesIDs(const std::string& type);
+    std::vector<std::string> getResourcesNames(const std::string& type);
 
     std::unique_ptr<char, freeDelete> getResourceData(const std::string& type, int ID, std::size_t* size);
     std::unique_ptr<char, freeDelete> getResourceData(const std::string& type,
