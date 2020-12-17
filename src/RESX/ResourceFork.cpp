@@ -169,6 +169,7 @@ std::string ResourceFork::getResourceName(Defs::addr resourceNameAddr)
 }
 
 // Find resource address by ID in the reference list.
+// Returns 0 if the ID is not.
 Defs::addr ResourceFork::findResourceAddress(const std::string& type, int ID)
 {
     ReferenceListPointerPair referenceListPointerPair = findReferenceListPointer(type);
@@ -214,6 +215,7 @@ Defs::addr ResourceFork::findResourceAddress(const std::string& type, int ID)
 }
 
 // Find resource address by name in the reference list.
+// Returns 0 if the name is not.
 Defs::addr ResourceFork::findResourceAddress(const std::string& type, const std::string& name)
 {
     ReferenceListPointerPair referenceListPointerPair = findReferenceListPointer(type);
@@ -339,12 +341,18 @@ std::vector<std::string> ResourceFork::getResourcesNames(const std::string& type
     return names;
 }
 
-// Get resource data from ID.
+// Get resource data by ID.
 std::unique_ptr<char, freeDelete> ResourceFork::getResourceData(const std::string& type, int ID, std::size_t* size)
 {
     // Find the resource!
     Defs::addr resourceAddress = findResourceAddress(type, ID);
     mHFSFile->seekg(resourceAddress, std::ios::beg);
+
+    if(resourceAddress == 0)
+    {
+        // Resource was not found, error messages already sent.
+        return std::unique_ptr<char, freeDelete>();
+    }
 
     std::size_t resourceSize = readSinglePrimitive<std::size_t>(mHFSFile, 4UL);
     /* File cursor now at actual resource data */
@@ -362,13 +370,19 @@ std::unique_ptr<char, freeDelete> ResourceFork::getResourceData(const std::strin
     return rawData;
 }
 
-// Get resource data from name.
+// Get resource data by name.
 std::unique_ptr<char, freeDelete> ResourceFork::getResourceData(const std::string& type,
     const std::string& name, std::size_t* size)
 {
     // Find the resource!
     Defs::addr resourceAddress = findResourceAddress(type, name);
     mHFSFile->seekg(resourceAddress, std::ios::beg);
+
+    if(resourceAddress == 0)
+    {
+        // Resource was not found, error messages already sent.
+        return std::unique_ptr<char, freeDelete>();
+    }
 
     std::size_t resourceSize = readSinglePrimitive<std::size_t>(mHFSFile, 4UL);
     /* File cursor now at actual resource data */
