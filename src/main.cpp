@@ -73,8 +73,8 @@ void printHelp()
         std::endl <<
         "Extracts a resource from a resource fork file (.rsrc)." << std::endl <<
         std::endl <<
-        "Usage: ResExtractorCmdLine [-input INPUT_FILE -resourceID ID -resourceType TYPE " <<
-        "[-blocksize BYTES] [-output OUTPUT_FILE] [-startblock BLOCK]]" << std::endl <<
+        "Usage: ResExtractorCmdLine -input INPUT_FILE -resourceID ID -resourceType TYPE " << std::endl <<
+        "   [-blocksize BYTES] [-output OUTPUT_FILE] [-startblock BLOCK]" << std::endl <<
         std::endl <<
         " --help, --h                 display help" << std::endl <<
         std::endl <<
