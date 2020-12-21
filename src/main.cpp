@@ -32,43 +32,12 @@ std::string gVersion = "v1.0";
 
 using Big = long long int;
 
-// Safe types according to CodeWarrior PowerPC documentation
-// for reading binary files.
-using sShort = std::int16_t;   // Safe short
-using sUShort = std::uint16_t; // Safe unsigned short
-using sInt = std::int32_t;     // Safe int
-using sUInt = std::uint32_t;   // Safe unsigned int
-using sLong = std::int32_t;    // Safe long
-using sULong = std::uint32_t;  // Safe unsigned long
-// For future reference:
-// (Metrowerks Inc., CodeWarrior ® C, C , and Assembly Language Reference. p. 28-29.)
-// All floating types follow IEEE
-// float: 32-bit -> 1.17549e-38 to 3.40282e+38
-// short double: 64-bit-> 2.22507e-308 to 1.79769e+308
-// double: 64-bit -> 2.22507e-308 to 1.79769e+308
-// long double: 64-bit -> 2.22507e-308 to 1.79769e+308
-// Note : Since long/short double is the same as double
-// on PowerPC, replace all long/short doubles with doubles
-// (makes my life much easier).
-// (Fun fact: PowerPC doesn't actually support long double at all.)
-
-// Padding on PowerPC according to CodeWarrior:
-// (Metrowerks Inc., CodeWarrior® Targeting Mac OS. p. 97.)
-// char: 1-byte boundary
-// int16_t: 2-byte boundary
-// int32_t: 4-byte boundary
-// int64_t: 8-byte boundary
-// float: 4-byte boundary
-// double: 8-byte boundary
-// long double: 8-byte boundary
-// struct: alignment of largest scalar type in struct
-
 void printHelp()
 {
     std::cout <<
         "********************************" << std::endl <<
         "**     ResExtractorCmdLine    **" << std::endl <<
-        "**        Version: " << gVersion << "      **" << std::endl <<
+        "**        Version: " << gVersion << "       **" << std::endl <<
         "********************************" << std::endl <<
         std::endl <<
         "Extracts a resource from a resource fork file (.rsrc)." << std::endl <<
